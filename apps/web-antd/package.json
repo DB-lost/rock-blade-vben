@@ -26,6 +26,8 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "@vben-core/shadcn-ui": "workspace:*",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
     "@vben/constants": "workspace:*",
@@ -40,12 +42,17 @@
     "@vben/styles": "workspace:*",
     "@vben/types": "workspace:*",
     "@vben/utils": "workspace:*",
+    "@vee-validate/zod": "catalog:",
     "@vueuse/core": "catalog:",
     "ant-design-vue": "catalog:",
     "dayjs": "catalog:",
     "jsencrypt": "^3.3.2",
+    "lucide-vue-next": "catalog:",
     "pinia": "catalog:",
+    "vee-validate": "catalog:",
     "vue": "catalog:",
-    "vue-router": "catalog:"
+    "vue-router": "catalog:",
+    "zod": "catalog:",
+    "zod-defaults": "catalog:"
   }
 }

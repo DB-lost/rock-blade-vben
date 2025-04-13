@@ -595,6 +595,12 @@ importers:
 
   apps/web-antd:
     dependencies:
+      '@ant-design/icons-vue':
+        specifier: ^7.0.1
+        version: 7.0.1(vue@3.5.13(typescript@5.8.3))
+      '@vben-core/shadcn-ui':
+        specifier: workspace:*
+        version: link:../../packages/@core/ui-kit/shadcn-ui
       '@vben/access':
         specifier: workspace:*
         version: link:../../packages/effects/access
@@ -637,6 +643,9 @@ importers:
       '@vben/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@vee-validate/zod':
+        specifier: 'catalog:'
+        version: 4.15.0(vue@3.5.13(typescript@5.8.3))(zod@3.24.2)
       '@vueuse/core':
         specifier: 'catalog:'
         version: 12.8.2(typescript@5.8.3)
@@ -649,15 +658,27 @@ importers:
       jsencrypt:
         specifier: ^3.3.2
         version: 3.3.2
+      lucide-vue-next:
+        specifier: 'catalog:'
+        version: 0.469.0(vue@3.5.13(typescript@5.8.3))
       pinia:
         specifier: ^2.3.1
         version: 2.3.1(typescript@5.8.3)(vue@3.5.13(typescript@5.8.3))
+      vee-validate:
+        specifier: 'catalog:'
+        version: 4.15.0(vue@3.5.13(typescript@5.8.3))
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
       vue-router:
         specifier: 'catalog:'
         version: 4.5.0(vue@3.5.13(typescript@5.8.3))
+      zod:
+        specifier: 'catalog:'
+        version: 3.24.2
+      zod-defaults:
+        specifier: 'catalog:'
+        version: 0.1.3(zod@3.24.2)
 
   internal/lint-configs/commitlint-config:
     dependencies:
