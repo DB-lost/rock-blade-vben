@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import type { PinInputProps } from './types';
 
-import { computed, onBeforeUnmount, ref, useId, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
 
 import { PinInput, PinInputGroup, PinInputInput } from '../../ui';
 import { VbenButton } from '../button';
+
+interface CountdownStorage {
+  duration: number;
+  startTime: number;
+  type: string;
+}
 
 defineOptions({
   inheritAttrs: false,
@@ -17,12 +23,56 @@ const {
   handleSendCode = async () => {},
   loading = false,
   maxTime = 60,
+  type = 'default',
 } = defineProps<PinInputProps>();
 
 const emit = defineEmits<{
   complete: [];
   sendError: [error: any];
 }>();
+
+const COUNTDOWN_STORAGE_KEY = 'pin_input_countdown';
+
+function getStoredCountdown(): CountdownStorage | null {
+  const stored = localStorage.getItem(COUNTDOWN_STORAGE_KEY);
+  if (!stored) return null;
+
+  try {
+    const data = JSON.parse(stored) as CountdownStorage;
+    if (data.type !== type) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function setStoredCountdown(time: number) {
+  const data: CountdownStorage = {
+    duration: time,
+    startTime: Date.now(),
+    type,
+  };
+  localStorage.setItem(COUNTDOWN_STORAGE_KEY, JSON.stringify(data));
+}
+
+function clearStoredCountdown() {
+  localStorage.removeItem(COUNTDOWN_STORAGE_KEY);
+}
+
+function restoreCountdown() {
+  const stored = getStoredCountdown();
+  if (!stored) return;
+
+  const elapsed = Math.floor((Date.now() - stored.startTime) / 1000);
+  const remaining = stored.duration - elapsed;
+
+  if (remaining > 0) {
+    countdown.value = remaining;
+    startCountdown();
+  } else {
+    clearStoredCountdown();
+  }
+}
 
 const timer = ref<ReturnType<typeof setTimeout>>();
 
@@ -61,10 +111,10 @@ async function handleSend(e: Event) {
     e?.preventDefault();
     await handleSendCode();
     countdown.value = maxTime;
+    setStoredCountdown(maxTime);
     startCountdown();
   } catch (error) {
     console.error('Failed to send code:', error);
-    // Consider emitting an error event or showing a notification
     emit('sendError', error);
   }
 }
@@ -73,14 +123,22 @@ function startCountdown() {
   if (countdown.value > 0) {
     timer.value = setTimeout(() => {
       countdown.value--;
+      if (countdown.value === 0) {
+        clearStoredCountdown();
+      }
       startCountdown();
     }, 1000);
   }
 }
 
+onMounted(() => {
+  restoreCountdown();
+});
+
 onBeforeUnmount(() => {
   countdown.value = 0;
   clearTimeout(timer.value);
+  clearStoredCountdown();
 });
 
 const id = useId();

@@ -48,6 +48,7 @@
     "class-variance-authority": "catalog:",
     "lucide-vue-next": "catalog:",
     "radix-vue": "catalog:",
+    "reka-ui": "^2.2.0",
     "vee-validate": "catalog:",
     "vue": "catalog:"
   }

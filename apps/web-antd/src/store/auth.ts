@@ -6,11 +6,14 @@ import { useRouter } from 'vue-router';
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from '@vben/constants';
 import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 
-import { notification } from 'ant-design-vue';
+import { message, notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import { loginApi, logoutApi } from '#/api';
+import { emailLoginApi, getPublicKey } from '#/api/core/auth';
+import { getAccessCodesApi, getUserInfoApi } from '#/api/core/common';
 import { $t } from '#/locales';
+import { rsaCrypto } from '#/utils/crypto';
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
@@ -32,7 +35,30 @@ export const useAuthStore = defineStore('auth', () => {
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken } = await loginApi(params);
+      // 获取公钥
+      await getPublicKey().then((res) => {
+        // 使用工具类设置公钥和nonce
+        rsaCrypto.setPublicKey(res.publicKey, res.nonce);
+      });
+      // 使用RSA工具类加密密码
+      const encryptedPassword = rsaCrypto.encryptData(params.password);
+
+      if (!encryptedPassword) {
+        message.error($t('page.auth.encryptionFailure'));
+        return;
+      }
+      // 调用登录接口
+      const accessToken = await (params.email
+        ? emailLoginApi({
+            email: params.email,
+            password: encryptedPassword,
+            nonce: rsaCrypto.getNonce(),
+          })
+        : loginApi({
+            username: params.username,
+            password: encryptedPassword,
+            nonce: rsaCrypto.getNonce(),
+          }));
 
       // 如果成功获取到 accessToken
       if (accessToken) {
