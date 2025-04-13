@@ -187,7 +187,83 @@ const [Form] = useVbenForm(
       hideRequiredMark: true,
     },
     schema: currentFormSchema,
-    showDefaultActions: false,
+    resetButtonOptions: {
+      size: 'lg',
+      loading: computed(() => loading.value),
+      content: computed(() =>
+        stepIndex.value === 2
+          ? $t('page.auth.back')
+          : $t('page.auth.backToLogin'),
+      ),
+      show: computed(() => stepIndex.value !== 3),
+      onClick: async () => {
+        if (stepIndex.value === 1) {
+          router.push('/auth/login');
+        } else if (stepIndex.value === 2) {
+          stepIndex.value = 1;
+        }
+      },
+    },
+    submitButtonOptions: {
+      size: 'lg',
+      loading: computed(() => loading.value),
+      content: computed(() =>
+        stepIndex.value === 2 ? $t('page.auth.submit') : $t('page.auth.next'),
+      ),
+      show: computed(() => stepIndex.value !== 3),
+      onClick: async () => {
+        if (stepIndex.value === 1) {
+          const values = await form.value?.validate();
+          if (values) {
+            const verified = await _verifyEmailCode(values);
+            if (verified) stepIndex.value++;
+          }
+        } else if (stepIndex.value === 2) {
+          const values = await form.value?.validate();
+          if (values) {
+            const success = await _handleRegister(values);
+            if (success) stepIndex.value++;
+          }
+        }
+      },
+    },
+    actionButtonOptions: {
+      show: true,
+      resetButton: {
+        show: computed(() => stepIndex.value !== 2),
+        text: computed(() =>
+          stepIndex.value === 1
+            ? $t('page.auth.backToLogin')
+            : $t('common.back'),
+        ),
+        variant: 'outline',
+        size: 'lg',
+        onClick: () => {
+          if (stepIndex.value === 1) {
+            router.push('/auth/login');
+          } else {
+            stepIndex.value--;
+          }
+        },
+      },
+      extraButtons: computed(() => {
+        if (stepIndex.value !== 3) return [];
+        return [
+          {
+            type: 'primary',
+            size: 'lg',
+            text: $t('page.auth.directLogin'),
+            onClick: handleDirectLogin,
+          },
+          {
+            variant: 'outline',
+            size: 'lg',
+            text: $t('page.auth.backToLogin'),
+            onClick: () => router.push('/login'),
+          },
+        ];
+      }),
+    },
   }),
 );
 
@@ -228,29 +304,6 @@ async function _handleRegister(_values: Recordable<any>) {
   }
 }
 
-// 处理下一步
-async function handleNextStep() {
-  try {
-    if (!form.value) return;
-
-    const values = await form.value.validate();
-
-    if (stepIndex.value === 1) {
-      const verified = await _verifyEmailCode(values);
-      if (verified) {
-        stepIndex.value++;
-      }
-    } else if (stepIndex.value === 2) {
-      const success = await _handleRegister(values);
-      if (success) {
-        stepIndex.value++;
-      }
-    }
-  } catch (error) {
-    console.error('Validation failed:', error);
-  }
-}
-
 // 直接登录
 function handleDirectLogin() {
   router.replace('/login');
@@ -258,115 +311,81 @@ function handleDirectLogin() {
 </script>
 
 <template>
-  <!-- title -->
-  <div class="mb-7 flex flex-col items-center sm:mx-auto sm:w-full sm:max-w-md">
-    <h2
-      class="text-foreground mb-3 text-3xl font-bold leading-9 tracking-tight lg:text-4xl"
+  <div>
+    <!-- title -->
+    <div
+      class="mb-7 flex flex-col items-center sm:mx-auto sm:w-full sm:max-w-md"
     >
-      {{ $t('page.auth.createAnAccount') }} 🚀
-    </h2>
-
-    <p class="text-muted-foreground lg:text-md text-sm">
-      {{ $t('page.auth.signUpSubtitle') }}
-    </p>
-  </div>
-  <Stepper
-    v-slot="{ isPrevDisabled, prevStep }"
-    v-model="stepIndex"
-    class="block w-full"
-  >
-    <div class="flex-start flex w-full gap-2">
-      <StepperItem
-        v-for="step in steps"
-        :key="step.step"
-        v-slot="{ state }"
-        class="relative flex w-full flex-col items-center justify-center"
-        :step="step.step"
+      <h2
+        class="text-foreground mb-3 text-3xl font-bold leading-9 tracking-tight lg:text-4xl"
       >
-        <StepperSeparator
-          v-if="step.step !== steps?.[steps.length - 1]?.step"
-          class="bg-muted group-data-[state=completed]:bg-primary absolute left-[calc(50%+20px)] right-[calc(-50%+10px)] top-5 block h-0.5 shrink-0 rounded-full"
-        />
+        {{ $t('page.auth.createAnAccount') }} 🚀
+      </h2>
 
-        <StepperTrigger as-child>
-          <Button
-            :variant="
-              state === 'completed' || state === 'active'
-                ? 'default'
-                : 'outline'
-            "
-            size="icon"
-            class="z-10 shrink-0 rounded-full"
-            :class="[
-              state === 'active' &&
-                'ring-ring ring-offset-background ring-2 ring-offset-2',
-            ]"
-            :disabled="state !== 'completed'"
-          >
-            <component
-              :is="step.icon"
-              class="size-5"
-              :class="{
-                'text-primary': state === 'completed' || state === 'active',
-                'text-muted-foreground': state === 'inactive',
-              }"
-            />
-          </Button>
-        </StepperTrigger>
-
-        <div class="mt-5 flex flex-col items-center text-center">
-          <StepperTitle
-            :class="[state === 'active' && 'text-primary']"
-            class="text-sm font-semibold transition lg:text-base"
-          >
-            {{ step.title }}
-          </StepperTitle>
-          <StepperDescription
-            :class="[state === 'active' && 'text-primary']"
-            class="text-muted-foreground sr-only text-xs transition md:not-sr-only lg:text-sm"
-          >
-            {{ step.description }}
-          </StepperDescription>
-        </div>
-      </StepperItem>
+      <p class="text-muted-foreground lg:text-md text-sm">
+        {{ $t('page.auth.signUpSubtitle') }}
+      </p>
     </div>
-
-    <div class="mt-4 flex flex-col items-center justify-center gap-4">
-      <Form ref="form" class="w-1/2 min-w-[300px]" @submit="handleFormSubmit" />
-      <div class="mt-4 flex items-center justify-between">
-        <VbenButton
-          :disabled="isPrevDisabled || loading"
-          variant="outline"
-          size="sm"
-          @click="prevStep()"
+    <Stepper v-model="stepIndex" class="block w-full">
+      <div class="flex-start flex w-full gap-2">
+        <StepperItem
+          v-for="step in steps"
+          :key="step.step"
+          v-slot="{ state }"
+          class="relative flex w-full flex-col items-center justify-center"
+          :step="step.step"
         >
-          {{ $t('common.back') }}
-        </VbenButton>
-        <div class="flex items-center gap-3">
-          <template v-if="stepIndex === 3">
-            <VbenButton type="primary" size="sm" @click="handleDirectLogin">
-              {{ $t('page.auth.directLogin') }}
-            </VbenButton>
-            <router-link to="/login">
-              <VbenButton variant="outline" size="sm">
-                {{ $t('page.auth.backToLogin') }}
-              </VbenButton>
-            </router-link>
-          </template>
-          <template v-else>
+          <StepperSeparator
+            v-if="step.step !== steps?.[steps.length - 1]?.step"
+            class="bg-muted group-data-[state=completed]:bg-primary absolute left-[calc(50%+20px)] right-[calc(-50%+10px)] top-5 block h-0.5 shrink-0 rounded-full"
+          />
+
+          <StepperTrigger as-child>
             <VbenButton
-              type="primary"
-              size="sm"
-              :loading="loading"
-              @click="handleNextStep"
+              :variant="
+                state === 'completed' || state === 'active'
+                  ? 'default'
+                  : 'outline'
+              "
+              size="icon"
+              class="z-10 shrink-0 rounded-full"
+              :class="[
+                state === 'active' &&
+                  'ring-ring ring-offset-background ring-2 ring-offset-2',
+              ]"
+              :disabled="state !== 'completed'"
             >
-              {{
-                stepIndex === 2 ? $t('page.auth.submit') : $t('page.auth.next')
-              }}
+              <component
+                :is="step.icon"
+                class="size-5"
+                :class="{
+                  'text-primary': state === 'completed' || state === 'active',
+                  'text-muted-foreground': state === 'inactive',
+                }"
+              />
             </VbenButton>
-          </template>
-        </div>
+          </StepperTrigger>
+
+          <div class="mt-5 flex flex-col items-center text-center">
+            <StepperTitle
+              :class="[state === 'active' && 'text-primary']"
+              class="text-sm font-semibold transition lg:text-base"
+            >
+              {{ step.title }}
+            </StepperTitle>
+            <StepperDescription
+              :class="[state === 'active' && 'text-primary']"
+              class="text-muted-foreground sr-only text-xs transition md:not-sr-only lg:text-sm"
+            >
+              {{ step.description }}
+            </StepperDescription>
+          </div>
+        </StepperItem>
       </div>
-    </div>
-  </Stepper>
+
+      <div class="mt-4">
+        <Form ref="form" @submit="handleFormSubmit" />
+      </div>
+    </Stepper>
+  </div>
 </template>

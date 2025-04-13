@@ -34,7 +34,8 @@
     "directLogin": "Direct Login",
     "backToLogin": "Back to Login",
     "submit": "Submit",
-    "next": "Next"
+    "next": "Next",
+    "back": "Back"
   },
   "dashboard": {
     "title": "Dashboard",
