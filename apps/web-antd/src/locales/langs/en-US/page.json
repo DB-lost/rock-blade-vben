@@ -40,7 +40,10 @@
     "codeVerifySuccess": "The verification code is successfully verified. Procedure",
     "encryptionFailure": "Encryption failure",
     "registerSuccess": "Registration successful",
-    "loginNow": "Direct entry"
+    "loginNow": "Direct entry",
+    "resetPassword": "Reset password",
+    "resetPasswordSuccess": "Reset password successfully",
+    "resetPasswordDesc": "Reset your password"
   },
   "dashboard": {
     "title": "Dashboard",

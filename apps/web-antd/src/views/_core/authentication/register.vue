@@ -31,7 +31,7 @@ import { rsaCrypto } from '#/utils/crypto';
 defineOptions({ name: 'Register' });
 
 const router = useRouter();
-const stepIndex = ref(3);
+const stepIndex = ref(1);
 const form = ref();
 const email = ref('');
 
@@ -321,11 +321,13 @@ async function _handleRegister(_values: Recordable<any>) {
 
 // 直接登录
 function handleDirectLogin() {
+  stepIndex.value = 1;
   router.replace('/login');
 }
 
 // 返回登陆界面
 function handleBackToLogin() {
+  stepIndex.value = 1;
   router.replace('/login');
 }
 </script>
@@ -404,7 +406,7 @@ function handleBackToLogin() {
       </div>
 
       <div class="mt-4">
-        <div v-if="stepIndex = 3">
+        <div v-if="stepIndex === 3">
           <div class="flex justify-center gap-4">
             <VbenButton
               class="mt-4"
@@ -424,8 +426,8 @@ function handleBackToLogin() {
               {{ $t('page.auth.backToLogin') }}
             </VbenButton>
           </div>
-          <Form ref="form" />
         </div>
+        <Form ref="form" />
       </div>
     </Stepper>
   </div>

@@ -53,11 +53,22 @@ export namespace AuthApi {
     publicKey: string;
     nonce: string;
   }
+
+  /** 重置密码请求 */
+  export interface ResetPasswordRequest {
+    /** 邮箱 */
+    email: string;
+    /** 密码 */
+    password: string;
+    /** 随机数 */
+    nonce: string;
+  }
 }
 
 enum Api {
   GetPublicKey = '/auth/getPublicKey',
   Register = '/auth/register',
+  ResetPassword = '/auth/resetPassword',
   SendEmailCode = '/auth/sendEmailCode',
   VerifyEmailCode = '/auth/verifyEmailCode',
 }
@@ -91,6 +102,14 @@ export async function getPublicKey() {
  */
 export async function register(data: AuthApi.RegisterRequest) {
   return requestClient.post(Api.Register, data);
+}
+
+/**
+ * 重置密码
+ * @param data
+ */
+export async function resetPassword(data: AuthApi.ResetPasswordRequest) {
+  return requestClient.post(Api.ResetPassword, data);
 }
 
 /**

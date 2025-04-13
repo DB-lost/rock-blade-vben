@@ -40,7 +40,10 @@
     "codeVerifySuccess": "验证码验证成功",
     "encryptionFailure": "加密失败",
     "registerSuccess": "注册成功",
-    "loginNow": "直接登录"
+    "loginNow": "直接登录",
+    "resetPassword": "重置密码",
+    "resetPasswordSuccess": "重置密码成功",
+    "resetPasswordDesc": "重置您的密码"
   },
   "dashboard": {
     "title": "概览",
