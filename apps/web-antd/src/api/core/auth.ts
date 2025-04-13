@@ -37,11 +37,7 @@ export namespace AuthApi {
   export interface LoginParams {
     password?: string;
     username?: string;
-  }
-
-  /** 登录接口返回值 */
-  export interface LoginResult {
-    accessToken: string;
+    nonce: string;
   }
 
   export interface RefreshTokenResult {
@@ -67,6 +63,7 @@ export namespace AuthApi {
 
 enum Api {
   GetPublicKey = '/auth/getPublicKey',
+  Login = '/auth/login',
   Register = '/auth/register',
   ResetPassword = '/auth/resetPassword',
   SendEmailCode = '/auth/sendEmailCode',
@@ -116,7 +113,7 @@ export async function resetPassword(data: AuthApi.ResetPasswordRequest) {
  * 登录
  */
 export async function loginApi(data: AuthApi.LoginParams) {
-  return requestClient.post<AuthApi.LoginResult>('/auth/login', data);
+  return requestClient.post<string>(Api.Login, data);
 }
 
 /**
@@ -135,11 +132,4 @@ export async function logoutApi() {
   return baseRequestClient.post('/auth/logout', {
     withCredentials: true,
   });
-}
-
-/**
- * 获取用户权限码
- */
-export async function getAccessCodesApi() {
-  return requestClient.get<string[]>('/auth/codes');
 }
