@@ -1,12 +1,22 @@
 import { baseRequestClient, requestClient } from '#/api/request';
 
 export namespace AuthApi {
-  /** 登录接口返回值 */
+  /** 发送邮箱验证码 */
   export interface SendEmailCodeRequest {
     /** 邮箱 */
     email: string;
     /** 业务类型（register-注册 reset-重置密码） */
     type: string;
+  }
+
+  /** 校验邮箱验证码 */
+  export interface VerifyEmailCodeRequest {
+    /** 邮箱 */
+    email: string;
+    /** 业务类型（register-注册 reset-重置密码） */
+    type: string;
+    /** 验证码 */
+    code: string;
   }
 
   /** 登录接口参数 */
@@ -28,6 +38,7 @@ export namespace AuthApi {
 
 enum Api {
   SendEmailCode = '/auth/sendEmailCode',
+  VerifyEmailCode = '/auth/verifyEmailCode',
 }
 
 /**
@@ -36,6 +47,14 @@ enum Api {
  */
 export async function sendEmailCodeApi(data: AuthApi.SendEmailCodeRequest) {
   return requestClient.post(Api.SendEmailCode, data);
+}
+
+/**
+ * 校验邮箱验证码
+ * @param data
+ */
+export async function verifyEmailCode(data: AuthApi.VerifyEmailCodeRequest) {
+  return requestClient.post(Api.VerifyEmailCode, data);
 }
 
 /**

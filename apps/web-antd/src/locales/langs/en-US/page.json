@@ -36,7 +36,8 @@
     "submit": "Submit",
     "next": "Next",
     "back": "Back",
-    "sendCodeSuccess": "The verification code is sent successfully. Procedure"
+    "sendCodeSuccess": "The verification code is sent successfully. Procedure",
+    "codeVerifySuccess": "The verification code is successfully verified. Procedure"
   },
   "dashboard": {
     "title": "Dashboard",

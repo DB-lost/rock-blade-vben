@@ -20,7 +20,7 @@ import {
 import { message } from 'ant-design-vue';
 import { LogIn, Mail, User } from 'lucide-vue-next';
 
-import { sendEmailCodeApi } from '#/api/core/auth';
+import { sendEmailCodeApi, verifyEmailCode } from '#/api/core/auth';
 
 defineOptions({ name: 'Register' });
 
@@ -38,7 +38,6 @@ const form = ref();
 
 const loading = ref(false);
 // const countdown = ref(0);
-const emailVerified = ref(false);
 const CODE_LENGTH = 6;
 
 const steps = [
@@ -234,13 +233,13 @@ const [Form, formApi] = useVbenForm(
       show: computed(() => stepIndex.value !== 3),
       onClick: async () => {
         if (stepIndex.value === 1) {
-          const values = await form.value?.validate();
+          const values = await formApi.validate();
           if (values) {
             const verified = await _verifyEmailCode(values);
             if (verified) stepIndex.value++;
           }
         } else if (stepIndex.value === 2) {
-          const values = await form.value?.validate();
+          const values = await formApi.validate();
           if (values) {
             const success = await _handleRegister(values);
             if (success) stepIndex.value++;
@@ -296,7 +295,13 @@ const [Form, formApi] = useVbenForm(
 // 验证邮箱验证码
 async function _verifyEmailCode(_values: Recordable<any>) {
   // 这里调用验证码验证API
-  emailVerified.value = true;
+  await verifyEmailCode({
+    email: _values.values.email,
+    code: _values.values.code,
+    type: 'register',
+  }).then(() => {
+    message.success($t('page.auth.codeVerifySuccess'));
+  });
   return true;
 }
 
