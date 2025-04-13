@@ -35,7 +35,8 @@
     "backToLogin": "Back to Login",
     "submit": "Submit",
     "next": "Next",
-    "back": "Back"
+    "back": "Back",
+    "sendCodeSuccess": "The verification code is sent successfully. Procedure"
   },
   "dashboard": {
     "title": "Dashboard",

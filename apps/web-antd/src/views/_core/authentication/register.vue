@@ -17,24 +17,27 @@ import {
   StepperTrigger,
 } from '@vben-core/shadcn-ui';
 
+import { message } from 'ant-design-vue';
 import { LogIn, Mail, User } from 'lucide-vue-next';
+
+import { sendEmailCodeApi } from '#/api/core/auth';
 
 defineOptions({ name: 'Register' });
 
 const router = useRouter();
 const stepIndex = ref(1);
 const form = ref();
-const formData = reactive<{
-  agreePolicy?: boolean;
-  code?: string;
-  confirmPassword?: string;
-  email?: string;
-  password?: string;
-  username?: string;
-}>({});
+// const formData = reactive<{
+//   agreePolicy?: boolean;
+//   code?: string;
+//   confirmPassword?: string;
+//   email?: string;
+//   password?: string;
+//   username?: string;
+// }>({});
 
 const loading = ref(false);
-const countdown = ref(0);
+// const countdown = ref(0);
 const emailVerified = ref(false);
 const CODE_LENGTH = 6;
 
@@ -75,20 +78,40 @@ const emailFormSchema = computed((): VbenFormSchema[] => {
       component: 'VbenPinInput',
       componentProps: {
         codeLength: CODE_LENGTH,
-        createText: (count: number) => {
+        createText: (countdown: number) => {
           const text =
-            count > 0
-              ? $t('page.auth.sendText', [count])
-              : $t('page.auth.sendCode');
+            countdown > 0
+              ? $t('authentication.sendText', [countdown])
+              : $t('authentication.sendCode');
           return text;
         },
-        placeholder: $t('page.auth.code'),
-        onSend: handleSendCode,
+        handleSendCode: async () => {
+          // 模拟发送验证码
+          // Simulate sending verification code
+          loading.value = true;
+          if (!formApi) {
+            loading.value = false;
+            throw new Error('formApi is not ready');
+          }
+          await formApi.validateField('email');
+          const isEmailReady = await formApi.isFieldValid('email');
+          if (!isEmailReady) {
+            loading.value = false;
+            throw new Error('Email is not Ready');
+          }
+          const { email } = await formApi.getValues();
+          await sendEmailCodeApi({ email, type: 'register' }).then(() => {
+            message.success($t('page.auth.sendCodeSuccess'));
+          });
+          loading.value = false;
+        },
+        placeholder: $t('authentication.code'),
+        type: 'register',
       },
       fieldName: 'code',
-      label: $t('page.auth.code'),
+      label: $t('authentication.code'),
       rules: z.string().length(CODE_LENGTH, {
-        message: $t('page.auth.codeTip', [CODE_LENGTH]),
+        message: $t('authentication.codeTip', [CODE_LENGTH]),
       }),
     },
   ];
@@ -180,7 +203,7 @@ const currentFormSchema = computed(() => {
   }
 });
 
-const [Form] = useVbenForm(
+const [Form, formApi] = useVbenForm(
   reactive({
     commonConfig: {
       hideLabel: true,
@@ -189,7 +212,6 @@ const [Form] = useVbenForm(
     schema: currentFormSchema,
     resetButtonOptions: {
       size: 'lg',
-      loading: computed(() => loading.value),
       content: computed(() =>
         stepIndex.value === 2
           ? $t('page.auth.back')
@@ -206,7 +228,6 @@ const [Form] = useVbenForm(
     },
     submitButtonOptions: {
       size: 'lg',
-      loading: computed(() => loading.value),
       content: computed(() =>
         stepIndex.value === 2 ? $t('page.auth.submit') : $t('page.auth.next'),
       ),
@@ -267,21 +288,10 @@ const [Form] = useVbenForm(
   }),
 );
 
-// 发送验证码
-async function handleSendCode() {
-  countdown.value = 60;
-  const timer = setInterval(() => {
-    countdown.value--;
-    if (countdown.value <= 0) {
-      clearInterval(timer);
-    }
-  }, 1000);
-}
-
 // 处理表单提交
-async function handleFormSubmit(values: Recordable<any>) {
-  Object.assign(formData, values);
-}
+// async function handleFormSubmit(values: Recordable<any>) {
+//   Object.assign(formData, values);
+// }
 
 // 验证邮箱验证码
 async function _verifyEmailCode(_values: Recordable<any>) {
@@ -384,7 +394,7 @@ function handleDirectLogin() {
       </div>
 
       <div class="mt-4">
-        <Form ref="form" @submit="handleFormSubmit" />
+        <Form ref="form" />
       </div>
     </Stepper>
   </div>

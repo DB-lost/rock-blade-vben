@@ -1,6 +1,14 @@
 import { baseRequestClient, requestClient } from '#/api/request';
 
 export namespace AuthApi {
+  /** 登录接口返回值 */
+  export interface SendEmailCodeRequest {
+    /** 邮箱 */
+    email: string;
+    /** 业务类型（register-注册 reset-重置密码） */
+    type: string;
+  }
+
   /** 登录接口参数 */
   export interface LoginParams {
     password?: string;
@@ -16,6 +24,18 @@ export namespace AuthApi {
     data: string;
     status: number;
   }
+}
+
+enum Api {
+  SendEmailCode = '/auth/sendEmailCode',
+}
+
+/**
+ * 发送邮箱验证码
+ * @param data
+ */
+export async function sendEmailCodeApi(data: AuthApi.SendEmailCodeRequest) {
+  return requestClient.post(Api.SendEmailCode, data);
 }
 
 /**

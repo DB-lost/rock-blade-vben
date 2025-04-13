@@ -25,6 +25,10 @@ interface PinInputProps {
    * 最大重试时间
    */
   maxTime?: number;
+  /**
+   * 倒计时类型，用于区分不同场景
+   */
+  type?: string;
 }
 
 export type { PinInputProps };
