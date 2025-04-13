@@ -43,6 +43,7 @@
     "@vueuse/core": "catalog:",
     "ant-design-vue": "catalog:",
     "dayjs": "catalog:",
+    "jsencrypt": "^3.3.2",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
