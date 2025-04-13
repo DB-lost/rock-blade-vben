@@ -10,7 +10,7 @@ import { message, notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
 import { loginApi, logoutApi } from '#/api';
-import { getPublicKey } from '#/api/core/auth';
+import { emailLoginApi, getPublicKey } from '#/api/core/auth';
 import { getAccessCodesApi, getUserInfoApi } from '#/api/core/common';
 import { $t } from '#/locales';
 import { rsaCrypto } from '#/utils/crypto';
@@ -48,11 +48,17 @@ export const useAuthStore = defineStore('auth', () => {
         return;
       }
       // 调用登录接口
-      const accessToken = await loginApi({
-        username: params.username,
-        password: encryptedPassword,
-        nonce: rsaCrypto.getNonce(),
-      });
+      const accessToken = await (params.email
+        ? emailLoginApi({
+            email: params.email,
+            password: encryptedPassword,
+            nonce: rsaCrypto.getNonce(),
+          })
+        : loginApi({
+            username: params.username,
+            password: encryptedPassword,
+            nonce: rsaCrypto.getNonce(),
+          }));
 
       // 如果成功获取到 accessToken
       if (accessToken) {

@@ -40,6 +40,13 @@ export namespace AuthApi {
     nonce: string;
   }
 
+  /** 登录接口参数 */
+  export interface EmailLoginParams {
+    email?: string;
+    password?: string;
+    nonce: string;
+  }
+
   export interface RefreshTokenResult {
     data: string;
     status: number;
@@ -62,6 +69,7 @@ export namespace AuthApi {
 }
 
 enum Api {
+  EmailLogin = '/auth/emailLogin',
   GetPublicKey = '/auth/getPublicKey',
   Login = '/auth/login',
   Register = '/auth/register',
@@ -114,6 +122,13 @@ export async function resetPassword(data: AuthApi.ResetPasswordRequest) {
  */
 export async function loginApi(data: AuthApi.LoginParams) {
   return requestClient.post<string>(Api.Login, data);
+}
+
+/**
+ * 登录
+ */
+export async function emailLoginApi(data: AuthApi.EmailLoginParams) {
+  return requestClient.post<string>(Api.EmailLogin, data);
 }
 
 /**

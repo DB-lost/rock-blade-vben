@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
+    "@types/lodash-es": "^4.17.12",
     "@vben-core/shadcn-ui": "workspace:*",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
@@ -47,6 +48,7 @@
     "ant-design-vue": "catalog:",
     "dayjs": "catalog:",
     "jsencrypt": "^3.3.2",
+    "lodash-es": "^4.17.21",
     "lucide-vue-next": "catalog:",
     "pinia": "catalog:",
     "vee-validate": "catalog:",

@@ -18,6 +18,7 @@ import {
 } from '@vben-core/shadcn-ui';
 
 import { message } from 'ant-design-vue';
+import { debounce } from 'lodash-es';
 import { Key, LogIn, Mail } from 'lucide-vue-next';
 
 import {
@@ -26,15 +27,25 @@ import {
   sendEmailCodeApi,
   verifyEmailCode,
 } from '#/api/core/auth';
+import { useAuthStore } from '#/store';
 import { rsaCrypto } from '#/utils/crypto';
 
 defineOptions({ name: 'ForgetPassword' });
 
+const authStore = useAuthStore();
 const router = useRouter();
 const stepIndex = ref(1);
 const email = ref('');
+const password = ref('');
 const loading = ref(false);
 const CODE_LENGTH = 6;
+
+// 创建防抖发送函数
+const debouncedSendCode = debounce(async (email: string, type: string) => {
+  await sendEmailCodeApi({ email, type }).then(() => {
+    message.success($t('page.auth.sendCodeSuccess'));
+  });
+}, 500);
 
 const steps = [
   {
@@ -82,21 +93,24 @@ const emailFormSchema = computed((): VbenFormSchema[] => {
         },
         handleSendCode: async () => {
           loading.value = true;
-          if (!formApi) {
+          try {
+            if (!formApi) {
+              throw new Error('formApi is not ready');
+            }
+            await formApi.validateField('email');
+            const isEmailReady = await formApi.isFieldValid('email');
+            if (!isEmailReady) {
+              throw new Error('Email is not Ready');
+            }
+            const { email } = await formApi.getValues();
+            await debouncedSendCode(email, 'reset');
+          } catch (error: unknown) {
+            if (error instanceof Error) {
+              message.error(error.message);
+            }
+          } finally {
             loading.value = false;
-            throw new Error('formApi is not ready');
           }
-          await formApi.validateField('email');
-          const isEmailReady = await formApi.isFieldValid('email');
-          if (!isEmailReady) {
-            loading.value = false;
-            throw new Error('Email is not Ready');
-          }
-          const { email } = await formApi.getValues();
-          await sendEmailCodeApi({ email, type: 'reset' }).then(() => {
-            message.success($t('page.auth.sendCodeSuccess'));
-          });
-          loading.value = false;
         },
         placeholder: $t('authentication.code'),
         type: 'reset',
@@ -253,6 +267,7 @@ async function _handleResetPassword(_values: Recordable<any>) {
       nonce: rsaCrypto.getNonce(),
     }).then(() => {
       message.success($t('page.auth.resetPasswordSuccess'));
+      password.value = _values.values.password;
     });
     return true;
   } finally {
@@ -261,9 +276,17 @@ async function _handleResetPassword(_values: Recordable<any>) {
 }
 
 // 直接登录
-function handleDirectLogin() {
+async function handleDirectLogin() {
   stepIndex.value = 1;
-  router.replace('/login');
+  authStore
+    .authLogin({
+      email: email.value,
+      password: password.value,
+    })
+    .finally(() => {
+      email.value = '';
+      password.value = '';
+    });
 }
 
 // 返回登录界面
