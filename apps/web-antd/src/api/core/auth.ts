@@ -19,6 +19,20 @@ export namespace AuthApi {
     code: string;
   }
 
+  /** 用户注册请求 */
+  export interface RegisterRequest {
+    /** 邮箱 */
+    email: string;
+    /** 用户名 */
+    username: string;
+    /** 密码 */
+    password: string;
+    /** 随机数 */
+    nonce: string;
+    /** 手机号 */
+    phone: string;
+  }
+
   /** 登录接口参数 */
   export interface LoginParams {
     password?: string;
@@ -34,9 +48,16 @@ export namespace AuthApi {
     data: string;
     status: number;
   }
+
+  export interface GetPublicKeyResponse {
+    publicKey: string;
+    nonce: string;
+  }
 }
 
 enum Api {
+  GetPublicKey = '/auth/getPublicKey',
+  Register = '/auth/register',
   SendEmailCode = '/auth/sendEmailCode',
   VerifyEmailCode = '/auth/verifyEmailCode',
 }
@@ -55,6 +76,21 @@ export async function sendEmailCodeApi(data: AuthApi.SendEmailCodeRequest) {
  */
 export async function verifyEmailCode(data: AuthApi.VerifyEmailCodeRequest) {
   return requestClient.post(Api.VerifyEmailCode, data);
+}
+
+/**
+ * 获取公钥
+ */
+export async function getPublicKey() {
+  return requestClient.post<AuthApi.GetPublicKeyResponse>(Api.GetPublicKey, {});
+}
+
+/**
+ * 用户注册
+ * @param data
+ */
+export async function register(data: AuthApi.RegisterRequest) {
+  return requestClient.post(Api.Register, data);
 }
 
 /**

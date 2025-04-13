@@ -20,21 +20,20 @@ import {
 import { message } from 'ant-design-vue';
 import { LogIn, Mail, User } from 'lucide-vue-next';
 
-import { sendEmailCodeApi, verifyEmailCode } from '#/api/core/auth';
+import {
+  getPublicKey,
+  register,
+  sendEmailCodeApi,
+  verifyEmailCode,
+} from '#/api/core/auth';
+import { rsaCrypto } from '#/utils/crypto';
 
 defineOptions({ name: 'Register' });
 
 const router = useRouter();
-const stepIndex = ref(1);
+const stepIndex = ref(3);
 const form = ref();
-// const formData = reactive<{
-//   agreePolicy?: boolean;
-//   code?: string;
-//   confirmPassword?: string;
-//   email?: string;
-//   password?: string;
-//   username?: string;
-// }>({});
+const email = ref('');
 
 const loading = ref(false);
 // const countdown = ref(0);
@@ -127,6 +126,20 @@ const userFormSchema = computed((): VbenFormSchema[] => {
       fieldName: 'username',
       label: $t('page.auth.username'),
       rules: z.string().min(1, { message: $t('page.auth.usernameTip') }),
+    },
+    {
+      component: 'VbenInput',
+      componentProps: {
+        placeholder: $t('authentication.mobileTip'),
+      },
+      fieldName: 'phone',
+      label: $t('authentication.mobile'),
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.mobileTip') })
+        .regex(/^1[3-9]\d{9}$/, {
+          message: $t('authentication.mobileErrortip'),
+        }),
     },
     {
       component: 'VbenInputPassword',
@@ -234,55 +247,18 @@ const [Form, formApi] = useVbenForm(
       onClick: async () => {
         if (stepIndex.value === 1) {
           const values = await formApi.validate();
-          if (values) {
+          if (values.valid) {
             const verified = await _verifyEmailCode(values);
             if (verified) stepIndex.value++;
           }
         } else if (stepIndex.value === 2) {
           const values = await formApi.validate();
-          if (values) {
+          if (values.valid) {
             const success = await _handleRegister(values);
             if (success) stepIndex.value++;
           }
         }
       },
-    },
-    actionButtonOptions: {
-      show: true,
-      resetButton: {
-        show: computed(() => stepIndex.value !== 2),
-        text: computed(() =>
-          stepIndex.value === 1
-            ? $t('page.auth.backToLogin')
-            : $t('common.back'),
-        ),
-        variant: 'outline',
-        size: 'lg',
-        onClick: () => {
-          if (stepIndex.value === 1) {
-            router.push('/auth/login');
-          } else {
-            stepIndex.value--;
-          }
-        },
-      },
-      extraButtons: computed(() => {
-        if (stepIndex.value !== 3) return [];
-        return [
-          {
-            type: 'primary',
-            size: 'lg',
-            text: $t('page.auth.directLogin'),
-            onClick: handleDirectLogin,
-          },
-          {
-            variant: 'outline',
-            size: 'lg',
-            text: $t('page.auth.backToLogin'),
-            onClick: () => router.push('/login'),
-          },
-        ];
-      }),
     },
   }),
 );
@@ -302,6 +278,7 @@ async function _verifyEmailCode(_values: Recordable<any>) {
   }).then(() => {
     message.success($t('page.auth.codeVerifySuccess'));
   });
+  email.value = _values.values.email;
   return true;
 }
 
@@ -309,11 +286,34 @@ async function _verifyEmailCode(_values: Recordable<any>) {
 async function _handleRegister(_values: Recordable<any>) {
   loading.value = true;
   try {
-    // 这里调用注册API
-    console.warn('register submit:', _values);
+    // 获取公钥
+    await getPublicKey().then((res) => {
+      // 使用工具类设置公钥和nonce
+      rsaCrypto.setPublicKey(res.publicKey, res.nonce);
+    });
+    // 使用RSA工具类加密密码
+    const encryptedPassword = rsaCrypto.encryptData(_values.values.password);
+
+    if (!encryptedPassword) {
+      message.error($t('page.auth.encryptionFailure'));
+      return;
+    }
+    // 调用注册API
+    await register({
+      /** 邮箱 */
+      email: email.value,
+      /** 业务类型（register-注册 reset-重置密码） */
+      username: _values.values.username,
+      /** 密码 */
+      password: encryptedPassword,
+      /** 随机数 */
+      nonce: rsaCrypto.getNonce(),
+      /** 手机号 */
+      phone: _values.values.phone,
+    }).then(() => {
+      message.success($t('page.auth.registerSuccess'));
+    });
     return true;
-  } catch {
-    return false;
   } finally {
     loading.value = false;
   }
@@ -321,6 +321,11 @@ async function _handleRegister(_values: Recordable<any>) {
 
 // 直接登录
 function handleDirectLogin() {
+  router.replace('/login');
+}
+
+// 返回登陆界面
+function handleBackToLogin() {
   router.replace('/login');
 }
 </script>
@@ -399,7 +404,28 @@ function handleDirectLogin() {
       </div>
 
       <div class="mt-4">
-        <Form ref="form" />
+        <div v-if="stepIndex = 3">
+          <div class="flex justify-center gap-4">
+            <VbenButton
+              class="mt-4"
+              size="lg"
+              :loading="loading"
+              @click="handleDirectLogin"
+            >
+              {{ $t('page.auth.loginNow') }}
+            </VbenButton>
+            <VbenButton
+              class="mt-4"
+              variant="outline"
+              size="lg"
+              :loading="loading"
+              @click="handleBackToLogin"
+            >
+              {{ $t('page.auth.backToLogin') }}
+            </VbenButton>
+          </div>
+          <Form ref="form" />
+        </div>
       </div>
     </Stepper>
   </div>

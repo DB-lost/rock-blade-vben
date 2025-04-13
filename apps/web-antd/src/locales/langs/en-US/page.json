@@ -37,7 +37,10 @@
     "next": "Next",
     "back": "Back",
     "sendCodeSuccess": "The verification code is sent successfully. Procedure",
-    "codeVerifySuccess": "The verification code is successfully verified. Procedure"
+    "codeVerifySuccess": "The verification code is successfully verified. Procedure",
+    "encryptionFailure": "Encryption failure",
+    "registerSuccess": "Registration successful",
+    "loginNow": "Direct entry"
   },
   "dashboard": {
     "title": "Dashboard",
