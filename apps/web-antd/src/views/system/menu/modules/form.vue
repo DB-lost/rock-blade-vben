@@ -41,7 +41,7 @@ const schema: VbenFormSchema[] = [
       options: getMenuTypeOptions(),
       optionType: 'button',
     },
-    defaultValue: 'menu',
+    defaultValue: 'MENU',
     fieldName: 'type',
     formItemClass: 'col-span-2 md:col-span-2',
     label: $t('system.menu.type'),
@@ -121,7 +121,7 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       show: (values) => {
-        return ['catalog', 'embedded', 'menu'].includes(values.type);
+        return ['CATALOG', 'EMBEDDED', 'MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -153,7 +153,7 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       show: (values) => {
-        return ['embedded', 'menu'].includes(values.type);
+        return ['EMBEDDED', 'MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -182,7 +182,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return ['catalog', 'embedded', 'link', 'menu'].includes(values.type);
+        return ['CATALOG', 'EMBEDDED', 'LINK', 'MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -196,7 +196,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return ['catalog', 'embedded', 'menu'].includes(values.type);
+        return ['CATALOG', 'EMBEDDED', 'MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -215,10 +215,10 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       rules: (values) => {
-        return values.type === 'menu' ? 'required' : null;
+        return values.type === 'MENU' ? 'required' : null;
       },
       show: (values) => {
-        return values.type === 'menu';
+        return values.type === 'MENU';
       },
       triggerFields: ['type'],
     },
@@ -229,7 +229,7 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       show: (values) => {
-        return ['embedded', 'link'].includes(values.type);
+        return ['EMBEDDED', 'LINK'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -241,10 +241,10 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       rules: (values) => {
-        return values.type === 'button' ? 'required' : null;
+        return values.type === 'BUTTON' ? 'required' : null;
       },
       show: (values) => {
-        return ['button', 'catalog', 'embedded', 'menu'].includes(values.type);
+        return ['BUTTON', 'CATALOG', 'EMBEDDED', 'MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -277,7 +277,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return values.type !== 'button';
+        return values.type !== 'BUTTON';
       },
       triggerFields: ['type'],
     },
@@ -295,7 +295,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return values.type !== 'button';
+        return values.type !== 'BUTTON';
       },
       triggerFields: ['type'],
     },
@@ -314,7 +314,7 @@ const schema: VbenFormSchema[] = [
     },
     dependencies: {
       show: (values) => {
-        return values.type !== 'button';
+        return values.type !== 'BUTTON';
       },
       triggerFields: ['type'],
     },
@@ -325,7 +325,7 @@ const schema: VbenFormSchema[] = [
     component: 'Divider',
     dependencies: {
       show: (values) => {
-        return !['button', 'link'].includes(values.type);
+        return !['BUTTON', 'LINK'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -342,7 +342,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return ['menu'].includes(values.type);
+        return ['MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -357,7 +357,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return ['embedded', 'menu'].includes(values.type);
+        return ['EMBEDDED', 'MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -372,7 +372,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return !['button'].includes(values.type);
+        return !['BUTTON'].includes(values.type.toUpperCase());
       },
       triggerFields: ['type'],
     },
@@ -387,7 +387,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return ['catalog', 'menu'].includes(values.type);
+        return ['CATALOG', 'MENU'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -402,7 +402,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return !['button', 'link'].includes(values.type);
+        return !['BUTTON', 'LINK'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -417,7 +417,7 @@ const schema: VbenFormSchema[] = [
     component: 'Checkbox',
     dependencies: {
       show: (values) => {
-        return !['button', 'link'].includes(values.type);
+        return !['BUTTON', 'LINK'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -448,9 +448,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange(isOpen) {
     if (isOpen) {
       const data = drawerApi.getData<SystemMenuApi.SystemMenu>();
-      if (data?.type === 'link') {
+      if (data?.type === 'LINK') {
         data.linkSrc = data.meta?.link;
-      } else if (data?.type === 'embedded') {
+      } else if (data?.type === 'EMBEDDED') {
         data.linkSrc = data.meta?.iframeSrc;
       }
       if (data) {
@@ -475,9 +475,9 @@ async function onSubmit() {
       await formApi.getValues<
         Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>
       >();
-    if (data.type === 'link') {
+    if (data.type === 'LINK') {
       data.meta = { ...data.meta, link: data.linkSrc };
-    } else if (data.type === 'embedded') {
+    } else if (data.type === 'EMBEDDED') {
       data.meta = { ...data.meta, iframeSrc: data.linkSrc };
     }
     delete data.linkSrc;

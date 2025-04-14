@@ -15,11 +15,11 @@ export namespace SystemMenuApi {
   export const BadgeTypes = ['dot', 'normal'] as const;
   /** 菜单类型集合 */
   export const MenuTypes = [
-    'catalog',
-    'menu',
-    'embedded',
-    'link',
-    'button',
+    'CATALOG',
+    'MENU',
+    'BUTTON',
+    'EMBEDDED',
+    'LINK',
   ] as const;
   /** 系统菜单 */
   export interface SystemMenu {
