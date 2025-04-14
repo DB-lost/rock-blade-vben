@@ -31,7 +31,7 @@ export namespace SystemMenuApi {
     /** 组件 */
     component?: string;
     /** 菜单ID */
-    id: string;
+    id: number;
     /** 菜单元数据 */
     meta?: {
       /** 激活时显示的图标 */
@@ -82,7 +82,7 @@ export namespace SystemMenuApi {
     /** 路由路径 */
     path: string;
     /** 父级ID */
-    pid: string;
+    pid: number;
     /** 重定向 */
     redirect?: string;
     /** 菜单类型 */
@@ -90,20 +90,26 @@ export namespace SystemMenuApi {
   }
 }
 
+enum Api {
+  BaseMenu = '/menu',
+  IsMenuNameExists = 'menu/nameExists',
+  IsMenuPathExists = '/menu/pathExists',
+  /** 菜单列表 */
+  MenuList = '/menu/list',
+}
+
 /**
  * 获取菜单数据列表
  */
 async function getMenuList() {
-  return requestClient.get<Array<SystemMenuApi.SystemMenu>>(
-    '/system/menu/list',
-  );
+  return requestClient.get<Array<SystemMenuApi.SystemMenu>>(Api.MenuList);
 }
 
 async function isMenuNameExists(
   name: string,
   id?: SystemMenuApi.SystemMenu['id'],
 ) {
-  return requestClient.get<boolean>('/system/menu/name-exists', {
+  return requestClient.get<boolean>(Api.IsMenuNameExists, {
     params: { id, name },
   });
 }
@@ -112,7 +118,7 @@ async function isMenuPathExists(
   path: string,
   id?: SystemMenuApi.SystemMenu['id'],
 ) {
-  return requestClient.get<boolean>('/system/menu/path-exists', {
+  return requestClient.get<boolean>(Api.IsMenuPathExists, {
     params: { id, path },
   });
 }
@@ -124,7 +130,7 @@ async function isMenuPathExists(
 async function createMenu(
   data: Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>,
 ) {
-  return requestClient.post('/system/menu', data);
+  return requestClient.post(Api.BaseMenu, data);
 }
 
 /**
@@ -137,15 +143,15 @@ async function updateMenu(
   id: string,
   data: Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/system/menu/${id}`, data);
+  return requestClient.put(`${Api.BaseMenu}/${id}`, data);
 }
 
 /**
  * 删除菜单
  * @param id 菜单 ID
  */
-async function deleteMenu(id: string) {
-  return requestClient.delete(`/system/menu/${id}`);
+async function deleteMenu(id: number) {
+  return requestClient.delete(`${Api.BaseMenu}/${id}`);
 }
 
 export {
