@@ -140,7 +140,7 @@ async function createMenu(
  * @param data 菜单数据
  */
 async function updateMenu(
-  id: string,
+  id: number,
   data: Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>,
 ) {
   return requestClient.put(`${Api.BaseMenu}/${id}`, data);
