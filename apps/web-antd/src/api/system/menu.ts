@@ -31,7 +31,7 @@ export namespace SystemMenuApi {
     /** 组件 */
     component?: string;
     /** 菜单ID */
-    id: number;
+    id: string;
     /** 菜单元数据 */
     meta?: {
       /** 激活时显示的图标 */
@@ -84,7 +84,7 @@ export namespace SystemMenuApi {
     /** 路由路径 */
     path: string;
     /** 父级ID */
-    pid: number;
+    pid: string;
     /** 重定向 */
     redirect?: string;
     /** 菜单类型 */
@@ -150,7 +150,7 @@ async function updateMenu(
  * 删除菜单
  * @param id 菜单 ID
  */
-async function deleteMenu(id: number) {
+async function deleteMenu(id: string) {
   return requestClient.delete(`${Api.BaseMenu}/${id}`);
 }
 

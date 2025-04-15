@@ -5,7 +5,7 @@ import { requestClient } from '#/api/request';
 export namespace SystemRoleApi {
   export interface SystemRole {
     [key: string]: any;
-    id: number;
+    id: string;
     name: string;
     permissions: string[];
     remark?: string;
@@ -49,7 +49,7 @@ async function updateRole(data: Omit<SystemRoleApi.SystemRole, 'id'>) {
  * 删除角色
  * @param id 角色 ID
  */
-async function deleteRole(id: number) {
+async function deleteRole(id: string) {
   return requestClient.delete(`${Api.BaseRole}/${id}`);
 }
 
