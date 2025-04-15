@@ -47,7 +47,10 @@
       "normal": "Text",
       "none": "None"
     },
-    "badgeVariants": "Badge Style"
+    "badgeVariants": "Badge Style",
+    "onStatus": "enable",
+    "offStatus": "forbidden",
+    "order": "sort"
   },
   "role": {
     "title": "Role Management",

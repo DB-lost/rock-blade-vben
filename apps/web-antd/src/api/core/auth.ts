@@ -72,6 +72,7 @@ enum Api {
   EmailLogin = '/auth/emailLogin',
   GetPublicKey = '/auth/getPublicKey',
   Login = '/auth/login',
+  Logout = '/auth/logout',
   Register = '/auth/register',
   ResetPassword = '/auth/resetPassword',
   SendEmailCode = '/auth/sendEmailCode',
@@ -132,19 +133,17 @@ export async function emailLoginApi(data: AuthApi.EmailLoginParams) {
 }
 
 /**
+ * 退出登录
+ */
+export async function logoutApi() {
+  return baseRequestClient.get(Api.Logout);
+}
+
+/**
  * 刷新accessToken
  */
 export async function refreshTokenApi() {
   return baseRequestClient.post<AuthApi.RefreshTokenResult>('/auth/refresh', {
-    withCredentials: true,
-  });
-}
-
-/**
- * 退出登录
- */
-export async function logoutApi() {
-  return baseRequestClient.post('/auth/logout', {
     withCredentials: true,
   });
 }

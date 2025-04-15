@@ -77,6 +77,8 @@ export namespace SystemMenuApi {
       /** 菜单标题 */
       title?: string;
     };
+    /** 菜单状态 */
+    status: string;
     /** 菜单名称 */
     name: string;
     /** 路由路径 */
@@ -136,14 +138,12 @@ async function createMenu(
 /**
  * 更新菜单
  *
- * @param id 菜单 ID
  * @param data 菜单数据
  */
 async function updateMenu(
-  id: number,
   data: Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>,
 ) {
-  return requestClient.put(`${Api.BaseMenu}/${id}`, data);
+  return requestClient.put(Api.BaseMenu, data);
 }
 
 /**

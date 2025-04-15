@@ -13,6 +13,7 @@ import { $te } from '@vben/locales';
 import { getPopupContainer } from '@vben/utils';
 
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
+import { message } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
 import {
@@ -34,6 +35,13 @@ const emit = defineEmits<{
 const formData = ref<SystemMenuApi.SystemMenu>();
 const titleSuffix = ref<string>();
 const schema: VbenFormSchema[] = [
+  {
+    component: 'Input',
+    fieldName: 'id',
+    componentProps: {
+      hidden: true,
+    },
+  },
   {
     component: 'RadioGroup',
     componentProps: {
@@ -256,14 +264,22 @@ const schema: VbenFormSchema[] = [
     componentProps: {
       buttonStyle: 'solid',
       options: [
-        { label: $t('common.enabled'), value: 1 },
-        { label: $t('common.disabled'), value: 0 },
+        { label: $t('common.enabled'), value: '1' },
+        { label: $t('common.disabled'), value: '0' },
       ],
       optionType: 'button',
     },
-    defaultValue: 1,
+    defaultValue: '1',
     fieldName: 'status',
     label: $t('system.menu.status'),
+  },
+  {
+    component: 'InputNumber',
+    componentProps: {
+      placeholder: $t('ui.placeholder.input'),
+    },
+    fieldName: 'meta.order',
+    label: $t('system.menu.order'),
   },
   {
     component: 'Select',
@@ -483,8 +499,12 @@ async function onSubmit() {
     delete data.linkSrc;
     try {
       await (formData.value?.id
-        ? updateMenu(formData.value.id, data)
-        : createMenu(data));
+        ? updateMenu(data).then(() => {
+            message.success($t('ui.actionMessage.operationSuccess'));
+          })
+        : createMenu(data).then(() => {
+            message.success($t('ui.actionMessage.operationSuccess'));
+          }));
       drawerApi.close();
       emit('success');
     } finally {
