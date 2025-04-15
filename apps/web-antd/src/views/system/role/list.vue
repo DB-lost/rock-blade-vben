@@ -44,6 +44,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
           });
         },
       },
+      response: {
+        result: 'records',
+        total: 'totalRow',
+      },
     },
     rowConfig: {
       keyField: 'id',
@@ -99,19 +103,24 @@ function confirm(content: string, title: string) {
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
 async function onStatusChange(
-  newStatus: number,
+  newStatus: string,
   row: SystemRoleApi.SystemRole,
 ) {
   const status: Recordable<string> = {
-    0: '禁用',
-    1: '启用',
+    '0': '禁用',
+    '1': '启用',
   };
   try {
     await confirm(
-      `你要将${row.name}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
+      `你要将${row.name}的状态切换为 【${status[newStatus]}】 吗？`,
       `切换状态`,
     );
-    await updateRole(row.id, { status: newStatus });
+    await updateRole({
+      id: row.id,
+      status: newStatus,
+      roleName: row.roleName,
+      roleKey: row.roleKey,
+    });
     return true;
   } catch {
     return false;

@@ -8,8 +8,21 @@ export function useFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
+      fieldName: 'id',
+      componentProps: {
+        hidden: true,
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'roleName',
       label: $t('system.role.roleName'),
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'roleKey',
+      label: $t('system.role.roleKey'),
       rules: 'required',
     },
     {
@@ -17,12 +30,12 @@ export function useFormSchema(): VbenFormSchema[] {
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: $t('common.enabled'), value: 1 },
-          { label: $t('common.disabled'), value: 0 },
+          { label: $t('common.enabled'), value: '1' },
+          { label: $t('common.disabled'), value: '0' },
         ],
         optionType: 'button',
       },
-      defaultValue: 1,
+      defaultValue: '1',
       fieldName: 'status',
       label: $t('system.role.status'),
     },
@@ -45,17 +58,16 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
+      fieldName: 'roleName',
       label: $t('system.role.roleName'),
     },
-    { component: 'Input', fieldName: 'id', label: $t('system.role.id') },
     {
       component: 'Select',
       componentProps: {
         allowClear: true,
         options: [
-          { label: $t('common.enabled'), value: 1 },
-          { label: $t('common.disabled'), value: 0 },
+          { label: $t('common.enabled'), value: '1' },
+          { label: $t('common.disabled'), value: '0' },
         ],
       },
       fieldName: 'status',
@@ -80,7 +92,7 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
 ): VxeTableGridOptions['columns'] {
   return [
     {
-      field: 'name',
+      field: 'roleName',
       title: $t('system.role.roleName'),
       width: 200,
     },
@@ -93,6 +105,10 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
       cellRender: {
         attrs: { beforeChange: onStatusChange },
         name: onStatusChange ? 'CellSwitch' : 'CellTag',
+        props: {
+          checkedValue: '1',
+          unCheckedValue: '0',
+        },
       },
       field: 'status',
       title: $t('system.role.status'),
