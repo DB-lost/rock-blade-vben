@@ -5,35 +5,8 @@ import type { SystemUserApi } from '#/api/system/user';
 import { getDeptList, getRoleList } from '#/api/system/user';
 import { $t } from '#/locales';
 
-export function useFormSchema(): {
-  schemas: VbenFormSchema[];
-} {
-  const schemas = [
-    {
-      component: 'Input',
-      fieldName: 'username',
-      label: $t('system.user.username'),
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'nickname',
-      label: $t('system.user.nickname'),
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'email',
-      label: $t('system.user.email'),
-      componentProps: {
-        type: 'email',
-      },
-    },
-    {
-      component: 'Input',
-      fieldName: 'phone',
-      label: $t('system.user.phone'),
-    },
+export function useFormSchema(): VbenFormSchema[] {
+  return [
     {
       component: 'ApiSelect',
       fieldName: 'dept',
@@ -61,20 +34,16 @@ export function useFormSchema(): {
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: $t('common.enabled'), value: 1 },
-          { label: $t('common.disabled'), value: 0 },
+          { label: $t('common.enabled'), value: '1' },
+          { label: $t('common.disabled'), value: '0' },
         ],
         optionType: 'button',
       },
-      defaultValue: 1,
+      defaultValue: '1',
       fieldName: 'status',
       label: $t('system.user.status'),
     },
   ];
-
-  return {
-    schemas,
-  };
 }
 
 export function useGridFormSchema(): VbenFormSchema[] {
@@ -185,6 +154,9 @@ export function useColumns<T = SystemUserApi.SystemUser>(
           onClick: onActionClick,
         },
         name: 'CellOperation',
+        options: [
+          'edit', // 默认的编辑按钮
+        ],
       },
       field: 'operation',
       fixed: 'right',

@@ -8,12 +8,11 @@ import type {
 import type { SystemUserApi } from '#/api/system/user';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
-import { Plus } from '@vben/icons';
 
-import { Button, message, Modal } from 'ant-design-vue';
+import { Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteUser, getUserPage, updateUser } from '#/api/system/user';
+import { getUserPage, updateUser } from '#/api/system/user';
 import { $t } from '#/locales';
 
 import { useColumns, useGridFormSchema } from './data';
@@ -24,7 +23,7 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
   destroyOnClose: true,
 });
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid] = useVbenVxeGrid({
   formOptions: {
     fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
@@ -64,10 +63,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function onActionClick(e: OnActionClickParams<SystemUserApi.SystemUser>) {
   switch (e.code) {
-    case 'delete': {
-      onDelete(e.row);
-      break;
-    }
+    // case 'delete': {
+    //   onDelete(e.row);
+    //   break;
+    // }
     case 'edit': {
       onEdit(e.row);
       break;
@@ -125,43 +124,43 @@ function onEdit(row: SystemUserApi.SystemUser) {
   formDrawerApi.setData(row).open();
 }
 
-function onDelete(row: SystemUserApi.SystemUser) {
-  const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deleting', [row.username]),
-    duration: 0,
-    key: 'action_process_msg',
-  });
-  deleteUser(row.id)
-    .then(() => {
-      message.success({
-        content: $t('ui.actionMessage.deleteSuccess', [row.username]),
-        key: 'action_process_msg',
-      });
-      onRefresh();
-    })
-    .catch(() => {
-      hideLoading();
-    });
-}
+// function onDelete(row: SystemUserApi.SystemUser) {
+//   const hideLoading = message.loading({
+//     content: $t('ui.actionMessage.deleting', [row.username]),
+//     duration: 0,
+//     key: 'action_process_msg',
+//   });
+//   deleteUser(row.id)
+//     .then(() => {
+//       message.success({
+//         content: $t('ui.actionMessage.deleteSuccess', [row.username]),
+//         key: 'action_process_msg',
+//       });
+//       onRefresh();
+//     })
+//     .catch(() => {
+//       hideLoading();
+//     });
+// }
 
-function onRefresh() {
-  gridApi.query();
-}
+// function onRefresh() {
+//   gridApi.query();
+// }
 
-function onCreate() {
-  formDrawerApi.setData({}).open();
-}
+// function onCreate() {
+//   formDrawerApi.setData({}).open();
+// }
 </script>
 <template>
   <Page auto-content-height>
     <FormDrawer />
     <Grid :table-title="$t('system.user.list')">
-      <template #toolbar-tools>
+      <!-- <template #toolbar-tools>
         <Button type="primary" @click="onCreate">
           <Plus class="size-5" />
           {{ $t('ui.actionTitle.create', [$t('system.user.name')]) }}
         </Button>
-      </template>
+      </template> -->
     </Grid>
   </Page>
 </template>

@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
           icon: 'mdi:account-group',
           title: $t('system.role.title'),
         },
-        component: () => import('#/views/system/role/list.vue'),
+        component: () => import('#/views/system/role/page.vue'),
       },
       {
         path: '/system/dept',
