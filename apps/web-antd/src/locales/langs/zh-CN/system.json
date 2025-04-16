@@ -8,7 +8,9 @@
     "parentDept": "上级部门",
     "remark": "备注",
     "status": "状态",
-    "title": "部门管理"
+    "title": "部门管理",
+    "onStatus": "启用",
+    "offStatus": "禁用"
   },
   "menu": {
     "list": "菜单列表",
