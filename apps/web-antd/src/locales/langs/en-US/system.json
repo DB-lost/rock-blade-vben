@@ -52,6 +52,9 @@
     "offStatus": "forbidden",
     "order": "sort"
   },
+  "user": {
+    "title": "用户管理"
+  },
   "role": {
     "title": "Role Management",
     "list": "Role List",
