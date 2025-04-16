@@ -43,7 +43,16 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (data) {
         formData.value = data;
         id.value = data.id;
-        formApi.setValues(data);
+
+        // 先构建完整的表单数据对象
+        const formValues = {
+          ...data,
+          deptIds: data.deptInfo?.deptIds || [],
+          roleIds: data.roleInfo?.roleIds || [],
+        };
+
+        // 一次性设置所有表单值
+        formApi.setValues(formValues);
       } else {
         id.value = undefined;
       }

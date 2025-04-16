@@ -8,25 +8,37 @@ import { $t } from '#/locales';
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
-      component: 'ApiSelect',
-      fieldName: 'dept',
+      component: 'Input',
+      fieldName: 'id',
+      componentProps: {
+        hidden: true,
+      },
+    },
+    {
+      component: 'ApiTreeSelect',
+      fieldName: 'deptIds',
       label: $t('system.user.dept'),
       componentProps: {
         placeholder: $t('system.user.dept'),
         api: getDeptList,
+        allowClear: true,
+        class: 'w-full',
         labelField: 'name',
         valueField: 'id',
+        childrenField: 'children',
+        multiple: true,
       },
     },
     {
       component: 'ApiSelect',
-      fieldName: 'roles',
+      fieldName: 'roleIds',
       label: $t('system.user.roles'),
       componentProps: {
         placeholder: $t('system.user.roles'),
         api: getRoleList,
         labelField: 'roleName',
         valueField: 'id',
+        multiple: true,
       },
     },
     {
@@ -59,21 +71,26 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: $t('system.user.email'),
     },
     {
-      component: 'ApiSelect',
-      fieldName: 'dept',
+      component: 'ApiTreeSelect',
+      fieldName: 'deptId',
       label: $t('system.user.dept'),
       componentProps: {
+        placeholder: $t('system.user.dept'),
         api: getDeptList,
+        allowClear: true,
+        class: 'w-full',
         labelField: 'name',
         valueField: 'id',
+        childrenField: 'children',
       },
     },
     {
       component: 'ApiSelect',
       componentProps: {
         api: getRoleList,
-        labelField: 'roleName',
+        labelField: 'roleId',
         valueField: 'id',
+        class: 'w-full',
       },
       fieldName: 'roles',
       label: $t('system.user.roles'),
@@ -119,13 +136,13 @@ export function useColumns<T = SystemUserApi.SystemUser>(
       width: 150,
     },
     {
-      field: 'depts',
+      field: 'deptInfo.depts',
       title: $t('system.user.dept'),
     },
     {
-      field: 'roles',
+      field: 'roleInfo.roles',
       title: $t('system.user.roles'),
-      width: 500,
+      width: 300,
     },
     {
       cellRender: {

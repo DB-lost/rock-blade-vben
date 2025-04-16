@@ -9,12 +9,16 @@ export namespace SystemUserApi {
     username: string;
     nickname: string;
     email?: string;
-    depts?: string[];
-    deptIds?: string[];
-    roles: string[];
-    roleIds?: string[];
     status: '0' | '1';
     updatedAt: string;
+    deptInfo: {
+      deptIds: string[];
+      depts: string[];
+    };
+    roleInfo: {
+      roleIds: string[];
+      roles: string[];
+    };
   }
 
   export interface DeptList {
