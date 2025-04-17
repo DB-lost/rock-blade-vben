@@ -3,10 +3,9 @@ import type { NotificationItem } from '@vben/layouts';
 
 import { computed, ref, watch } from 'vue';
 
-import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
-import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@vben/constants';
+import { AuthenticationLoginExpiredModal, useVbenModal } from '@vben/common-ui';
 import { useWatermark } from '@vben/hooks';
-import { BookOpenText, CircleHelp, MdiGithub } from '@vben/icons';
+import { CircleHelp } from '@vben/icons';
 import {
   BasicLayout,
   LockScreen,
@@ -15,41 +14,42 @@ import {
 } from '@vben/layouts';
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
-import { openWindow } from '@vben/utils';
 
 import { $t } from '#/locales';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
+import Form from './modules/form.vue';
+
 const notifications = ref<NotificationItem[]>([
-  {
-    avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
-    date: '3小时前',
-    isRead: true,
-    message: '描述信息描述信息描述信息',
-    title: '收到了 14 份新周报',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '刚刚',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '朱偏右 回复了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '2024-01-01',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '曲丽丽 评论了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '代办提醒',
-  },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
+  //   date: '3小时前',
+  //   isRead: true,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '收到了 14 份新周报',
+  // },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/1',
+  //   date: '刚刚',
+  //   isRead: false,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '朱偏右 回复了你',
+  // },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/1',
+  //   date: '2024-01-01',
+  //   isRead: false,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '曲丽丽 评论了你',
+  // },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/satori',
+  //   date: '1天前',
+  //   isRead: false,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '代办提醒',
+  // },
 ]);
 
 const userStore = useUserStore();
@@ -60,33 +60,45 @@ const showDot = computed(() =>
   notifications.value.some((item) => !item.isRead),
 );
 
+const [FormModal, formModalApi] = useVbenModal({
+  connectedComponent: Form,
+  destroyOnClose: true,
+});
+
 const menus = computed(() => [
+  // {
+  //   handler: () => {
+  //     openWindow(VBEN_DOC_URL, {
+  //       target: '_blank',
+  //     });
+  //   },
+  //   icon: BookOpenText,
+  //   text: $t('ui.widgets.document'),
+  // },
+  // {
+  //   handler: () => {
+  //     openWindow(VBEN_GITHUB_URL, {
+  //       target: '_blank',
+  //     });
+  //   },
+  //   icon: MdiGithub,
+  //   text: 'GitHub',
+  // },
+  // {
+  //   handler: () => {
+  //     openWindow(`${VBEN_GITHUB_URL}/issues`, {
+  //       target: '_blank',
+  //     });
+  //   },
+  //   icon: CircleHelp,
+  //   text: $t('ui.widgets.qa'),
+  // },
   {
     handler: () => {
-      openWindow(VBEN_DOC_URL, {
-        target: '_blank',
-      });
-    },
-    icon: BookOpenText,
-    text: $t('ui.widgets.document'),
-  },
-  {
-    handler: () => {
-      openWindow(VBEN_GITHUB_URL, {
-        target: '_blank',
-      });
-    },
-    icon: MdiGithub,
-    text: 'GitHub',
-  },
-  {
-    handler: () => {
-      openWindow(`${VBEN_GITHUB_URL}/issues`, {
-        target: '_blank',
-      });
+      formModalApi.setData(null).open();
     },
     icon: CircleHelp,
-    text: $t('ui.widgets.qa'),
+    text: $t('system.user.persionInfo'),
   },
 ]);
 
@@ -120,6 +132,10 @@ watch(
     immediate: true,
   },
 );
+
+function handleRefresh() {
+  authStore.fetchUserInfo();
+}
 </script>
 
 <template>
@@ -128,9 +144,9 @@ watch(
       <UserDropdown
         :avatar
         :menus
-        :text="userStore.userInfo?.realName"
-        description="ann.vben@gmail.com"
-        tag-text="Pro"
+        :text="userStore.userInfo?.nickname"
+        :description="userStore.userInfo?.email"
+        :tag-text="userStore.userInfo?.role ? userStore.userInfo?.role : 'pro'"
         @logout="handleLogout"
       />
     </template>
@@ -154,4 +170,5 @@ watch(
       <LockScreen :avatar @to-login="handleLogout" />
     </template>
   </BasicLayout>
+  <FormModal @success="handleRefresh" />
 </template>

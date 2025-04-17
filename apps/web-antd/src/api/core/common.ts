@@ -15,3 +15,10 @@ export async function getUserInfoApi() {
 export async function getAccessCodesApi() {
   return requestClient.get<string[]>('/common/getCodes');
 }
+
+/**
+ * 更新用户详细信息
+ */
+export async function updateUserDetailsApi(data: any) {
+  return requestClient.post('/common/updateUserDetails', data);
+}

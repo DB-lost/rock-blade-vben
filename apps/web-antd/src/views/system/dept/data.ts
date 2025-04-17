@@ -15,6 +15,13 @@ export function useSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
+      fieldName: 'id',
+      componentProps: {
+        hidden: true,
+      },
+    },
+    {
+      component: 'Input',
       fieldName: 'name',
       label: $t('system.dept.deptName'),
       rules: z
@@ -43,12 +50,12 @@ export function useSchema(): VbenFormSchema[] {
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: $t('common.enabled'), value: 1 },
-          { label: $t('common.disabled'), value: 0 },
+          { label: $t('common.enabled'), value: '1' },
+          { label: $t('common.disabled'), value: '0' },
         ],
         optionType: 'button',
       },
-      defaultValue: 1,
+      defaultValue: '1',
       fieldName: 'status',
       label: $t('system.dept.status'),
     },
@@ -65,6 +72,17 @@ export function useSchema(): VbenFormSchema[] {
         .string()
         .max(50, $t('ui.formRules.maxLength', [$t('system.dept.remark'), 50]))
         .optional(),
+    },
+  ];
+}
+
+export function getDeptStatusOptions() {
+  return [
+    { color: 'error', label: $t('system.dept.offStatus'), value: '0' },
+    {
+      color: 'success',
+      label: $t('system.dept.onStatus'),
+      value: '1',
     },
   ];
 }
@@ -87,13 +105,13 @@ export function useColumns(
       width: 150,
     },
     {
-      cellRender: { name: 'CellTag' },
+      cellRender: { name: 'CellTag', options: getDeptStatusOptions() },
       field: 'status',
-      title: $t('system.dept.status'),
+      title: $t('system.menu.status'),
       width: 100,
     },
     {
-      field: 'createTime',
+      field: 'createdAt',
       title: $t('system.dept.createTime'),
       width: 180,
     },
