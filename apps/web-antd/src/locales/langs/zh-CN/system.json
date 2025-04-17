@@ -81,7 +81,10 @@
     "roles": "所属角色",
     "status": "状态",
     "createTime": "创建时间",
-    "operation": "操作"
+    "operation": "操作",
+    "userInfo": "用户信息",
+    "persionInfo": "个人信息",
+    "avatar": "头像"
   },
   "title": "系统管理"
 }
