@@ -52,6 +52,23 @@
     "offStatus": "forbidden",
     "order": "sort"
   },
+  "user": {
+    "title": "User management",
+    "list": "User list",
+    "name": "user",
+    "username": "username",
+    "nickname": "nickname",
+    "email": "mailbox",
+    "phone": "Mobile phone number",
+    "dept": "Subordinate department",
+    "roles": "role",
+    "status": "status",
+    "createTime": "Creation time",
+    "operation": "Controls",
+    "userInfo": "User information",
+    "persionInfo": "Personal information",
+    "avatar": "avatar"
+  },
   "role": {
     "title": "Role Management",
     "list": "Role List",
