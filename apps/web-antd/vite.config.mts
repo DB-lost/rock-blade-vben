@@ -5,6 +5,7 @@ export default defineConfig(async () => {
     application: {},
     vite: {
       server: {
+        allowedHosts: ['vben.rockblade.cn'],
         proxy: {
           '/api': {
             changeOrigin: true,
